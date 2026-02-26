@@ -3,7 +3,7 @@ import email
 from email.header import decode_header
 
 ADRESSE_MAIL = "testentreprises1@gmail.com"
-MOT_DE_PASSE = "aqdf mhid gjrc aqzm"
+MOT_DE_PASSE = ""
 
 def recuperer_emails(nombre=5):
     connexion = imaplib.IMAP4_SSL("imap.gmail.com")
