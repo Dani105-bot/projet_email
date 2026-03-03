@@ -3,13 +3,22 @@ from flask import Flask, render_template, request, session, redirect, url_for
 from utils import nettoyer_email
 from gemini import classifier_email, generer_reponse
 from lecteur_mail import recuperer_emails_nouveaux
+from database import db, Email
 
 app = Flask(__name__)
 app.secret_key = "revival2024"
 
-# Identifiants de connexion
+# Configuration MySQL
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:1470@localhost/projet_email"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
+
 UTILISATEURS = {
-    "admin": "revival123"
+    "admin": "1234"
 }
 
 @app.route("/", methods=["GET", "POST"])
@@ -52,6 +61,20 @@ def index():
         email_propre = nettoyer_email(email_recu)
         categorie = classifier_email(email_propre)
         reponse = generer_reponse(email_propre, categorie)
+
+        expediteur = request.form.get("expediteur", "Manuel")
+        sujet = request.form.get("sujet", "Analyse manuelle")
+
+        nouvel_email = Email(
+            expediteur=expediteur,
+            sujet=sujet,
+            contenu=email_recu,
+            categorie=categorie,
+            reponse=reponse
+        )
+        db.session.add(nouvel_email)
+        db.session.commit()
+
         resultat = {
             "email_original": email_recu,
             "categorie": categorie,
@@ -59,6 +82,14 @@ def index():
         }
 
     return render_template("index.html", resultat=resultat, emails=emails, onglet_actif=onglet_actif)
+
+@app.route("/historique")
+def historique():
+    if not session.get("connecte"):
+        return redirect(url_for("accueil"))
+    emails_traites = Email.query.order_by(Email.date_traitement.desc()).all()
+    return render_template("historique.html", emails=emails_traites)
+
 @app.route("/deconnexion")
 def deconnexion():
     session.clear()

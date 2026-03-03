@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Historique — Revival Technologies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: #f4f6f9; display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* HEADER */
+        .header {
+            background: white;
+            padding: 14px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-bottom: 1px solid #eee;
+        }
+        .header-logo { display: flex; flex-direction: column; }
+        .header-logo-nom { font-size: 22px; font-weight: 800; color: #003087; letter-spacing: -0.5px; line-height: 1; }
+        .header-logo-nom span { color: #0066CC; }
+        .header-logo-sous { font-size: 10px; color: #999; letter-spacing: 1px; margin-top: 2px; }
+        .header-centre { font-size: 13px; color: #666; font-weight: 500; }
+        .btn-retour {
+            color: #003087;
+            text-decoration: none;
+            border: 1.5px solid #003087;
+            padding: 7px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-retour:hover { background: #003087; color: white; }
+
+        /* LAYOUT */
+        .layout { display: flex; flex: 1; min-height: calc(100vh - 60px); }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            min-width: 250px;
+            background: white;
+            border-right: 1px solid #e8ecf0;
+            display: flex;
+            flex-direction: column;
+            padding: 25px 0;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.03);
+        }
+        .sidebar-titre {
+            color: #aab0bb;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            padding: 0 22px 14px;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 22px;
+            color: #5a6475;
+            font-size: 14px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .sidebar-item:hover { background: #f0f4ff; color: #003087; }
+        .sidebar-item.actif {
+            background: #EEF3FF;
+            color: #003087;
+            border-left: 3px solid #0066CC;
+            font-weight: 600;
+        }
+        .sidebar-icon { font-size: 17px; }
+        .sidebar-divider { height: 1px; background: #eef0f3; margin: 12px 22px; }
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px 22px;
+            border-top: 1px solid #eef0f3;
+            color: #c0c6d0;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        /* CONTENU */
+        .main { flex: 1; padding: 30px 35px; overflow-y: auto; }
+        .page-titre { font-size: 20px; font-weight: 700; color: #003087; margin-bottom: 5px; }
+        .page-sous-titre { font-size: 13px; color: #8a93a2; margin-bottom: 22px; }
+
+        /* CARTES */
+        .carte {
+            background: white;
+            border-radius: 12px;
+            padding: 25px 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 6px rgba(0,48,135,0.06);
+            border: 1px solid #edf0f5;
+        }
+        .carte h2 { color: #003087; margin-bottom: 18px; font-size: 15px; font-weight: 600; }
+
+        /* STATS */
+        .stats { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .stat-card {
+            background: #EEF3FF;
+            border-radius: 10px;
+            padding: 14px 22px;
+            text-align: center;
+            min-width: 100px;
+            border: 1px solid #d0dcff;
+        }
+        .stat-nombre { font-size: 26px; font-weight: 700; color: #003087; }
+        .stat-label { font-size: 11px; color: #888; font-weight: 500; margin-top: 2px; }
+
+        /* TABLEAU */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th {
+            background: #003087;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+        th:first-child { border-radius: 8px 0 0 0; }
+        th:last-child { border-radius: 0 8px 0 0; }
+        td { padding: 11px 15px; border-bottom: 1px solid #edf0f5; color: #4a5568; }
+        tr:hover td { background: #f8faff; }
+
+        /* BADGES */
+        .badge {
+            display: inline-block;
+            padding: 4px 13px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        .DEVIS { background: #d4f0e0; color: #0a6b3a; }
+        .SUPPORT { background: #fff4d6; color: #8a5c00; }
+        .RECLAMATION { background: #fde8e8; color: #c0392b; }
+        .INFORMATION { background: #daeeff; color: #0066CC; }
+        .CANDIDATURE { background: #ede8ff; color: #5b21b6; }
+        .AUTRE { background: #f0f0f0; color: #555; }
+
+        .vide { text-align: center; color: #c0c6d0; padding: 50px; font-size: 14px; }
+        .vide-icon { font-size: 40px; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-logo">
+            <div class="header-logo-nom">Re<span>VIVAL</span></div>
+            <div class="header-logo-sous">Technologies & Conseils</div>
+        </div>
+        <div class="header-centre">Gestionnaire d'Emails Intelligent — Powered by IA</div>
+        <a href="/emails" class="btn-retour">← Retour</a>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <p class="sidebar-titre">Navigation</p>
+            <a href="/emails" class="sidebar-item">
+                <span class="sidebar-icon">📬</span> Emails reçus
+            </a>
+            <a href="/emails" class="sidebar-item">
+                <span class="sidebar-icon">🔍</span> Analyser un texte
+            </a>
+            <div class="sidebar-divider"></div>
+            <a href="/historique" class="sidebar-item actif">
+                <span class="sidebar-icon">📋</span> Historique
+            </a>
+            <div class="sidebar-footer">
+                Revival Technologies & Conseils<br>
+                © 2026 — Tous droits réservés.
+            </div>
+        </div>
+
+        <!-- CONTENU -->
+        <div class="main">
+            <div class="page-titre">📋 Historique</div>
+            <div class="page-sous-titre">Tous les emails analysés et traités par l'IA</div>
+
+            <div class="carte">
+                <h2>📊 Résumé</h2>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-nombre">{{ emails|length }}</div>
+                        <div class="stat-label">Total</div>
+                    </div>
+                    {% for cat in ['DEVIS', 'SUPPORT', 'RECLAMATION', 'INFORMATION', 'CANDIDATURE'] %}
+                    {% set count = emails | selectattr('categorie', 'equalto', cat) | list | length %}
+                    {% if count > 0 %}
+                    <div class="stat-card">
+                        <div class="stat-nombre">{{ count }}</div>
+                        <div class="stat-label">{{ cat }}</div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if emails %}
+                <table>
+                    <tr>
+                        <th>Date</th>
+                        <th>Expéditeur</th>
+                        <th>Sujet</th>
+                        <th>Catégorie</th>
+                    </tr>
+                    {% for e in emails %}
+                    <tr>
+                        <td>{{ e.date_traitement.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ e.expediteur }}</td>
+                        <td>{{ e.sujet }}</td>
+                        <td><span class="badge {{ e.categorie }}">{{ e.categorie }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                <div class="vide">
+                    <div class="vide-icon">📭</div>
+                    Aucun email traité pour le moment.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

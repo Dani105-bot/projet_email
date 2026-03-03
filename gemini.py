@@ -1,6 +1,6 @@
 from groq import Groq
 
-API_KEY = "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"
+API_KEY = "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"
 
 client = Groq(api_key=API_KEY)
 
