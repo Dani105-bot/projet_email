@@ -10,7 +10,6 @@
         .header { background: white; padding: 14px 35px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-bottom: 1px solid #eee; }
         .header-logo { display: flex; flex-direction: column; }
         .header-logo-nom { font-size: 22px; font-weight: 800; color: #003087; letter-spacing: -0.5px; line-height: 1; }
-        .header-logo-nom span { color: #0066CC; }
         .header-logo-sous { font-size: 10px; color: #999; letter-spacing: 1px; margin-top: 2px; }
         .header-centre { font-size: 13px; color: #666; font-weight: 500; }
         .btn-deconnexion { color: #003087; text-decoration: none; border: 1.5px solid #003087; padding: 7px 18px; border-radius: 6px; font-size: 13px; font-weight: 600; transition: all 0.2s; }
@@ -47,10 +46,11 @@
         .btn-primary:hover { background: #0066CC; }
         .btn-analyser { background: #EEF3FF; color: #003087; border: 1px solid #d0dcff; }
         .btn-analyser:hover { background: #0066CC; color: white; }
+        .btn-lu { background: #f0f0f0; color: #555; border: 1px solid #ddd; text-decoration: none; display: inline-flex; align-items: center; }
+        .btn-lu:hover { background: #e0e0e0; color: #333; }
         label { display: block; font-weight: 600; color: #2d3748; margin-bottom: 8px; font-size: 13px; }
         textarea { width: 100%; height: 160px; padding: 13px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; font-family: 'Poppins', sans-serif; resize: vertical; outline: none; color: #2d3748; transition: border 0.2s; }
         textarea:focus { border-color: #0066CC; }
-        .reponse-box { background: #f8faff; border-left: 4px solid #0066CC; padding: 16px; border-radius: 8px; font-size: 14px; line-height: 1.8; white-space: pre-wrap; margin-top: 12px; color: #2d3748; }
         .section-titre { font-weight: 600; color: #003087; margin-bottom: 8px; font-size: 13px; margin-top: 16px; }
         .vide { text-align: center; color: #c0c6d0; padding: 50px; font-size: 14px; }
         .vide-icon { font-size: 40px; margin-bottom: 12px; }
@@ -62,29 +62,30 @@
         th { background: #003087; color: white; padding: 12px 15px; text-align: left; font-weight: 600; font-size: 12px; }
         td { padding: 11px 15px; border-bottom: 1px solid #edf0f5; color: #4a5568; }
         tr:hover td { background: #f8faff; }
+        .alert-success { background: #d4f0e0; color: #0a6b3a; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600; font-size: 13px; }
+        .alert-error { background: #fde8e8; color: #c0392b; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600; font-size: 13px; }
     </style>
 </head>
 <body>
-<!--HEADER-->
+
     <div class="header">
         <div class="header-logo">
-            <div class="header-logo-nom">REVIVAL</div>
-            <div class="header-logo-sous">Technologies & Conseils</div>
-        </div>
-        <div class="header-centre">Gestionnaire d'Emails Intelligent </div>
+    <img src="/static/logo.png" alt="Revival Technologies" style="height: 75px; width: auto ; mix-blend-mode: multiply;"
+    >
+</div>
+        <div class="header-centre">Gestionnaire d'Emails Intelligent</div>
         <a href="/deconnexion" class="btn-deconnexion">Déconnexion</a>
     </div>
- <!--slide-bar-->
+
     <div class="layout">
         <div class="sidebar">
-            <p class="sidebar-titre">Navigation</p>
-            <div class="sidebar-item actif" onclick="afficherSection('emails', this)">
+            <div id="sidebar-emails" class="sidebar-item" onclick="afficherSection('emails')">
                 <span class="sidebar-icon">📬</span> Emails reçus
             </div>
-            <div class="sidebar-item" onclick="afficherSection('analyser', this)">
+            <div id="sidebar-analyser" class="sidebar-item" onclick="afficherSection('analyser')">
                 <span class="sidebar-icon">🔍</span> Analyser un texte
             </div>
-            <div class="sidebar-item" onclick="afficherSection('historique', this)">
+            <div id="sidebar-historique" class="sidebar-item" onclick="afficherSection('historique')">
                 <span class="sidebar-icon">📋</span> Historique
             </div>
             <div class="sidebar-footer">
@@ -95,8 +96,14 @@
 
         <div class="main">
 
+            {% if message %}
+            <div class="{{ 'alert-success' if 'succès' in message else 'alert-error' }}">
+                {{ message }}
+            </div>
+            {% endif %}
+
             <!-- EMAILS RECUS -->
-            <div id="emails" class="section actif">
+            <div id="emails" class="section">
                 <div class="page-titre">📬 Emails reçus</div>
                 <div class="page-sous-titre">Emails automatiquement classifiés par l'IA</div>
                 <div class="carte">
@@ -111,13 +118,17 @@
                                 <div class="email-item">
                                     <p><strong>De :</strong> {{ e.expediteur }}</p>
                                     <p><strong>Sujet :</strong> {{ e.sujet }}</p>
-                                    <form method="POST" action="/emails">
-                                        <input type="hidden" name="email" value="{{ e.contenu }}">
-                                        <input type="hidden" name="expediteur" value="{{ e.expediteur }}">
-                                        <input type="hidden" name="sujet" value="{{ e.sujet }}">
-                                        <input type="hidden" name="onglet" value="emails">
-                                        <button type="submit" class="btn btn-analyser">Analyser cet email</button>
-                                    </form>
+                                    <div style="display:flex; gap:10px; margin-top:8px;">
+                                        <form method="POST" action="/emails">
+                                            <input type="hidden" name="email" value="{{ e.contenu }}">
+                                            <input type="hidden" name="expediteur" value="{{ e.expediteur }}">
+                                            <input type="hidden" name="sujet" value="{{ e.sujet }}">
+                                            <input type="hidden" name="email_id" value="{{ e.id }}">
+                                            <input type="hidden" name="onglet" value="emails">
+                                            <button type="submit" class="btn btn-analyser">🔍 Analyser</button>
+                                        </form>
+                                        <a href="/marquer_lu/{{ e.id }}" class="btn btn-lu">✅ Marquer comme lu</a>
+                                    </div>
                                 </div>
                                 {% endfor %}
                             </div>
@@ -129,12 +140,21 @@
                             Aucun nouvel email pour le moment.
                         </div>
                     {% endif %}
+
                     {% if resultat and onglet_actif == 'emails' %}
                     <div style="margin-top:20px; border-top:1px solid #edf0f5; padding-top:20px;">
                         <p class="section-titre">Catégorie détectée :</p>
                         <span class="badge {{ resultat.categorie }}">{{ resultat.categorie }}</span>
-                        <p class="section-titre">Réponse suggérée par l'IA :</p>
-                        <div class="reponse-box">{{ resultat.reponse_suggeree }}</div>
+                        <p class="section-titre">Modifier et envoyer la réponse :</p>
+                        <form method="POST" action="/envoyer">
+                            <input type="hidden" name="destinataire" value="{{ resultat.expediteur }}">
+                            <input type="hidden" name="sujet" value="{{ resultat.sujet }}">
+                            <input type="hidden" name="email_id" value="{{ resultat.email_id }}">
+                            <textarea name="corps" style="height:220px;">{{ resultat.reponse_suggeree }}</textarea>
+                            <button type="submit" class="btn btn-primary" style="margin-top:12px; width:100%; padding:13px; font-size:14px;">
+                                📤 Envoyer la réponse
+                            </button>
+                        </form>
                     </div>
                     {% endif %}
                 </div>
@@ -153,81 +173,122 @@
                             Analyser avec l'IA
                         </button>
                     </form>
+
                     {% if resultat and onglet_actif == 'analyser' %}
                     <div style="margin-top:25px; border-top:1px solid #edf0f5; padding-top:20px;">
                         <p class="section-titre">Catégorie détectée :</p>
                         <span class="badge {{ resultat.categorie }}">{{ resultat.categorie }}</span>
-                        <p class="section-titre">Réponse suggérée par l'IA :</p>
-                        <div class="reponse-box">{{ resultat.reponse_suggeree }}</div>
+                        <p class="section-titre">Modifier et envoyer la réponse :</p>
+                        <form method="POST" action="/envoyer">
+                            <input type="hidden" name="destinataire" value="{{ resultat.expediteur }}">
+                            <input type="hidden" name="sujet" value="{{ resultat.sujet }}">
+                            <input type="hidden" name="email_id" value="{{ resultat.email_id }}">
+                            <textarea name="corps" style="height:220px;">{{ resultat.reponse_suggeree }}</textarea>
+                            <button type="submit" class="btn btn-primary" style="margin-top:12px; width:100%; padding:13px; font-size:14px;">
+                                📤 Envoyer la réponse
+                            </button>
+                        </form>
                     </div>
                     {% endif %}
                 </div>
             </div>
 
-            <!-- HISTORIQUE -->
-            <div id="historique" class="section">
-                <div class="page-titre">📋 Historique</div>
-                <div class="page-sous-titre">Tous les emails analysés et traités par l'IA</div>
-                <div class="carte">
-                    <h2>📊 Résumé</h2>
-                    <div class="stats">
-                        <div class="stat-card">
-                            <div class="stat-nombre">{{ emails_traites|length }}</div>
-                            <div class="stat-label">Total</div>
-                        </div>
-                        {% for cat in ['DEVIS', 'SUPPORT', 'RECLAMATION', 'INFORMATION', 'CANDIDATURE'] %}
-                        {% set count = emails_traites | selectattr('categorie', 'equalto', cat) | list | length %}
-                        {% if count > 0 %}
-                        <div class="stat-card">
-                            <div class="stat-nombre">{{ count }}</div>
-                            <div class="stat-label">{{ cat }}</div>
-                        </div>
-                        {% endif %}
-                        {% endfor %}
-                    </div>
-                    {% if emails_traites %}
-                    <table>
-                        <tr>
-                            <th>Date</th>
-                            <th>Expéditeur</th>
-                            <th>Sujet</th>
-                            <th>Catégorie</th>
-                        </tr>
-                        {% for e in emails_traites %}
-                        <tr>
-                            <td>{{ e.date_traitement.strftime('%d/%m/%Y %H:%M') }}</td>
-                            <td>{{ e.expediteur }}</td>
-                            <td>{{ e.sujet }}</td>
-                            <td><span class="badge {{ e.categorie }}">{{ e.categorie }}</span></td>
-                        </tr>
-                        {% endfor %}
-                    </table>
-                    {% else %}
-                    <div class="vide">
-                        <div class="vide-icon">📭</div>
-                        Aucun email traité pour le moment.
-                    </div>
-                    {% endif %}
-                </div>
+<!-- HISTORIQUE -->
+<div id="historique" class="section">
+    <div class="page-titre">📋 Historique</div>
+    <div class="page-sous-titre">Tous les emails analysés et traités par l'IA</div>
+    <div class="carte">
+        <h2>📊 Résumé</h2>
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-nombre">{{ emails_traites|length }}</div>
+                <div class="stat-label">Total</div>
             </div>
-
+            {% for cat in ['DEVIS', 'SUPPORT', 'RECLAMATION', 'INFORMATION', 'CANDIDATURE'] %}
+            {% set count = emails_traites | selectattr('categorie', 'equalto', cat) | list | length %}
+            {% if count > 0 %}
+            <div class="stat-card">
+                <div class="stat-nombre">{{ count }}</div>
+                <div class="stat-label">{{ cat }}</div>
+            </div>
+            {% endif %}
+            {% endfor %}
         </div>
     </div>
 
+    {% if emails_traites %}
+        {% set ns = namespace(date_courante='') %}
+        {% for e in emails_traites %}
+            {% set date_email = e.date_traitement.strftime('%d/%m/%Y') %}
+            {% if date_email != ns.date_courante %}
+                {% if ns.date_courante != '' %}
+                </table></div>
+                {% endif %}
+                {% set ns.date_courante = date_email %}
+                <div class="carte" style="margin-bottom:15px;">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+                    <div style="background:#003087; color:white; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600;">
+                        📅 {{ date_email }}
+                    </div>
+                </div>
+                <table>
+                    <tr>
+                        <th>Heure</th>
+                        <th>Expéditeur</th>
+                        <th>Sujet</th>
+                        <th>Catégorie</th>
+                        <th>Statut</th>
+                    </tr>
+            {% endif %}
+            <tr>
+                <td>{{ e.date_traitement.strftime('%H:%M') }}</td>
+                <td>{{ e.expediteur }}</td>
+                <td>{{ e.sujet }}</td>
+                <td><span class="badge {{ e.categorie }}">{{ e.categorie }}</span></td>
+                <td>
+                    {% if e.statut == 'repondu' %}
+                    <span style="color:#0a6b3a; font-weight:600;">✅ Répondu</span>
+                    {% elif e.statut == 'lu' %}
+                    <span style="color:#888; font-weight:600;">👁️ Lu</span>
+                    {% else %}
+                    <span style="color:#c0392b; font-weight:600;">⏳ En attente</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </table></div>
+    {% else %}
+    <div class="carte">
+        <div class="vide">
+            <div class="vide-icon">📭</div>
+            Aucun email traité pour le moment.
+        </div>
+    </div>
+    {% endif %}
+</div>
     <script>
-        function afficherSection(id, element) {
+        function afficherSection(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('actif'));
             document.querySelectorAll('.sidebar-item').forEach(o => o.classList.remove('actif'));
             document.getElementById(id).classList.add('actif');
-            element.classList.add('actif');
+            document.getElementById('sidebar-' + id).classList.add('actif');
+            history.pushState(null, '', '/emails?onglet=' + id);
         }
 
-        const ongletActif = "{{ onglet_actif }}";
-        if (ongletActif === 'analyser') {
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            const ongletUrl = params.get('onglet');
+            const ongletServeur = "{{ onglet_actif }}";
+            const onglet = (ongletServeur && ongletServeur !== 'emails') ? ongletServeur : (ongletUrl || 'emails');
+
             document.querySelectorAll('.section').forEach(s => s.classList.remove('actif'));
             document.querySelectorAll('.sidebar-item').forEach(o => o.classList.remove('actif'));
-            document.getElementById('analyser').classList.add('actif');
-            document.querySelectorAll('.sidebar-item')[1].classList.add('actif');
+
+            const section = document.getElementById(onglet);
+            if (section) section.classList.add('actif');
+
+            const item = document.getElementById('sidebar-' + onglet);
+            if (item) item.classList.add('actif');
         }
     </script>
 

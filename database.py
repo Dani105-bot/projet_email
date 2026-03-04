@@ -12,4 +12,5 @@ class Email(db.Model):
     contenu = db.Column(db.Text, nullable=False)
     categorie = db.Column(db.String(50), nullable=False)
     reponse = db.Column(db.Text, nullable=False)
+    statut = db.Column(db.String(50), default="non_traite")
     date_traitement = db.Column(db.DateTime, default=datetime.utcnow)

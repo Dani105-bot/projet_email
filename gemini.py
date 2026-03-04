@@ -1,6 +1,6 @@
 from groq import Groq
 
-API_KEY = "TA_CLE_GROQ_ICI"
+API_KEY = "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"
 client = Groq(api_key=API_KEY)
 
 def classifier_email(texte_email):
